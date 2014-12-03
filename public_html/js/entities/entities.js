@@ -23,12 +23,12 @@ game.PlayerEntity = me.Entity.extend({
     
     update: function(delta){
         if(me.input.isKeyPressed("right")){
-            this.body.vel.x += this.body.accel.x * me.timer.tick;
-            
+            this.body.vel.x += this.body.accel.x * me.timer.tick;      
+                    
         }else{
             this.body.vel.x = 0;
         }
-        
+
         this.body.update(delta);
         me.collision.check(this, true, this.collideHandler.bind(this), true);
         
@@ -108,7 +108,13 @@ game.BadGuy = me.Entity.extend({
         me.collision.check(this, true, this.collideHandler.bind(this), true);
         
         if(this.alive){
-            
+            if(this.walkLeft && this.pos.x <= this.startX){
+                this.walkLeft = false; 
+            }else if(!this.walkLeft && this.pos.x >= this.endX){
+                this.walkLeft = true;
+            } 
+            this.flipX(!this.walkLeft);
+            this.body.vel.x += (this.walkLeft) ? -this.body.accel.x * me.time.tick : this.body.accel.x * me.time.tick;
             
         }else{
             me.game.world.removeChild(this);
