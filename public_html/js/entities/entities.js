@@ -23,9 +23,15 @@ game.PlayerEntity = me.Entity.extend({
     
     update: function(delta){
         if(me.input.isKeyPressed("right")){
-            this.body.vel.x += this.body.accel.x * me.timer.tick;      
-                    
-        }else{
+            this.body.vel.x += this.body.accel.x * me.timer.tick;
+        }
+                else  if(me.input.isKeyPressed("left")){
+            this.body.vel.x -= this.body.accel.x * me.timer.tick;   
+        }             
+                else  if(me.input.isKeyPressed("space")){
+            this.body.vel.y -= this.body.accel.y * me.timer.tick;
+        }
+        else{
             this.body.vel.x = 0;
         }
 
@@ -114,7 +120,7 @@ game.BadGuy = me.Entity.extend({
                 this.walkLeft = true;
             } 
             this.flipX(!this.walkLeft);
-            this.body.vel.x += (this.walkLeft) ? -this.body.accel.x * me.time.tick : this.body.accel.x * me.time.tick;
+            this.body.vel.x += (this.walkLeft) ? -this.body.accel.x * me.timer.tick : this.body.accel.x * me.timer.tick;
             
         }else{
             me.game.world.removeChild(this);
