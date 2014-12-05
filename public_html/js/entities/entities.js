@@ -13,16 +13,26 @@ game.PlayerEntity = me.Entity.extend({
        }]);
    
        this.renderable.addAnimation("idle", [3]);
+       //create an animation called smallWalk using pictures of the image defined above (mario)
+       //sets the animation to run through pictures 8-13
+       //the last number says we switch between pictures every 80 milliseconds
        this.renderable.addAnimation("smallWalk", [8, 9, 10, 11, 12, 13], 80);
        
        this.renderable.setCurrentAnimation("idle");
        
+       
+       //sets the speed we go on the x axis(first number) and y axis(second number)
        this.body.setVelocity(5, 20);
+       
+       //sets the camera(viewport) to follow mario's position(pos) on both the x and y axis
        me.game.viewport.follow(this.pos, me.game.viewport.AXIS.BOTH);
    },     
     
     update: function(delta){
+        //checks if the right key is pressed and if it is, executes the following statement
         if(me.input.isKeyPressed("right")){
+            //sets the position of mario on the x axis by adding the x value from the setVelocity times the timer.tick
+            //me.timer.tick uses the time since last animation to make the distance traveled smooth
             this.body.vel.x += this.body.accel.x * me.timer.tick;
         }
                 else  if(me.input.isKeyPressed("left")){
@@ -50,18 +60,25 @@ game.PlayerEntity = me.Entity.extend({
         
         
         this._super(me.Entity, "update", [delta]);
+        //return true; //makes the object solid
         return true;
     },
     
     collideHandler: function(response){
+        if(response.b.type === 'badguy'){
+           me.state.change(me.state.MENU); 
+        }
         
     }
+    
     
 });
 
 game.LevelTrigger = me.Entity.extend({
     init: function (x, y, settings){
         this._super(me.Entity, 'init', [x, y, settings]);
+        //if something collides with this object then we will call the onCollision function and pass it 
+        //a hidden parameter of this object
         this.body.onCollision = this.onCollision.bind(this);
         this.level = settings.level;
         this.xSpawn = settings.xSpawn;
@@ -69,6 +86,8 @@ game.LevelTrigger = me.Entity.extend({
     },
     
     onCollision: function() {
+        //sets this object so that it will collide only with objects of type no_object, which don't exist
+        //so really, makes it so this object will not collide with anything anymore
         this.body.setCollisionMask(me.collision.types.NO_OBJECT);
         me.levelDirector.loadLevel(this.level);
         me.state.current().resetPlayer(this.xSpawn, this.ySpawn);
