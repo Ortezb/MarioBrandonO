@@ -19,10 +19,12 @@ game.PlayerEntity = me.Entity.extend({
        //the last number says we switch between pictures every 80 milliseconds
        this.renderable.addAnimation("smallWalk", [8, 9, 10, 11, 12, 13], 80);
        this.renderable.addAnimation("bigWalk", [14, 15, 16, 17, 18, 19], 80);
+       this.renderable.addAnimation("shrink", [0, 1, 2, 3], 80);
+       this.renderable.addAnimation("grow", [4, 5, 6, 7], 80);
+       
        
        this.renderable.setCurrentAnimation("idle");
-       
-       
+             
        this.big = false;
        //sets the speed we go on the x axis(first number) and y axis(second number)
        this.body.setVelocity(5, 20);
@@ -53,7 +55,7 @@ game.PlayerEntity = me.Entity.extend({
         
         if(!this.big){
             if(this.body.vel.x !== 0) {
-                if(!this.renderable.isCurrentAnimation("smallWalk")) {
+                if(!this.renderable.isCurrentAnimation("smallWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
                     this.renderable.setCurrentAnimation("smallWalk");
                     this.renderable.setAnimationFrame();
                 }
@@ -62,7 +64,7 @@ game.PlayerEntity = me.Entity.extend({
             }
         }else{
             if(this.body.vel.x !== 0) {
-                if(!this.renderable.isCurrentAnimation("bigWalk")) {
+                if(!this.renderable.isCurrentAnimation("bigWalk") && !this.renderable.isCurrentAnimation("grow") && !this.renderable.isCurrentAnimation("shrink")) {
                     this.renderable.setCurrentAnimation("bigWalk");
                     this.renderable.setAnimationFrame();
                 }
@@ -87,11 +89,16 @@ game.PlayerEntity = me.Entity.extend({
             }else{
                 if(this.big){
                     this.big = false;
+                    this.body.vel.y -= this.body.accel.y * me.timer.tick;
+                    this.jumping = true;
+                    this.renderable.setCurrentAnimation("shrink", "idle");
+                    this.renderable.setAnimationFrame();
                 }else{
                     me.state.change(me.state.MENU);
                 }
             }   
         }else if(response.b.type === 'mushroom'){
+            this.renderable.setCurrentAnimation("grow", "bigIdle");
             this.big = true;
             me.game.world.removeChild(response.b);
         }
